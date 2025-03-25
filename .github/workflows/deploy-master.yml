@@ -1,0 +1,42 @@
+name: CD w/ NGINX, Docker Hub
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+
+  docker-build-push:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log into Docker Hub
+      run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
+
+    - name: Build, tag, and push
+      run: |
+        docker build -t "${{ secrets.DOCKER_HUB_USER }}"/taskmanagerrp:latest .
+        docker push "${{ secrets.DOCKER_HUB_USER }}"/taskmanagerrp:latest
+
+  oracle-vm:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.ORACLE_HOST }}
+        username: ${{ secrets.ORACLE_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: 22
+        script: |
+          sudo docker stop taskmanagerrp || true
+          sudo docker rm taskmanagerrp || true
+          sudo docker pull "${{ secrets.DOCKER_HUB_USER }}"/taskmanagerrp:latest
+          sudo docker run -d --name taskmanagerrp -p 80:80 443:443 \
+          -e AUTH_IP="${{ secrets.AUTH_IP }}" \
+          -e BACKEND_IP="{{ secrets.BACKEND_IP }}" \
+          "${{ secrets.DOCKER_HUB_USER }}"/taskmanagerrp:latest
+          sudo docker image prune -f
