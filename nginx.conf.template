@@ -3,8 +3,8 @@ server {
     listen 443;
     server_name auth-microservice.duckdns.org;
 
-    ssl_certificate ${CERTIFICATE_LOCATION};
-    ssl_certificate_key ${KEY_LOCATION};
+    ssl_certificate ${CERTIFICATE_LOCATION} ;
+    ssl_certificate_key ${KEY_LOCATION} ;
 
     location /api/auth {
         proxy_pass http://${AUTH_IP};  # Forward to auth
