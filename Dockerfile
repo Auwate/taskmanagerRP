@@ -1,6 +1,6 @@
 FROM nginx:1.27.4-alpine
 
-COPY ./nginx.conf /
+COPY ./nginx.conf.template /etc/nginx/templates/
 
 VOLUME [ "/etc/letsencrypt" ]
 
