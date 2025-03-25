@@ -37,5 +37,8 @@ jobs:
           sudo docker run -d --name taskmanagerrp -p 80:80 -p 443:443 \
           -e AUTH_IP="${{ secrets.AUTH_IP }}" \
           -e BACKEND_IP="{{ secrets.BACKEND_IP }}" \
+          -e CERTIFICATE_LOCATION="{{ secrets.CERTIFICATE_LOCATION }}" \
+          -e KEY_LOCATION="{{ secrets.KEY_LOCATION }}" \
+          -v /etc/letsencrypt:/etc/letsencrypt:ro \
           "${{ secrets.DOCKER_HUB_USER }}"/taskmanagerrp:latest
           sudo docker image prune -f
