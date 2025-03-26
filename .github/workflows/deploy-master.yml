@@ -39,6 +39,7 @@ jobs:
           -e BACKEND_IP="${{ secrets.BACKEND_IP }}" \
           -e CERTIFICATE_LOCATION="${{ secrets.CERTIFICATE_LOCATION }}" \
           -e KEY_LOCATION="${{ secrets.KEY_LOCATION }}" \
+          -e FRONTEND_IP="${{ secrets.FRONTEND_IP }}" \
           -v /etc/letsencrypt:/etc/letsencrypt:ro \
           "${{ secrets.DOCKER_HUB_USER }}"/taskmanagerrp:latest
           sudo docker image prune -f
